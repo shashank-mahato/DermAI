@@ -58,7 +58,7 @@ def index():
                 chat_completion = client.chat.completions.create(
                     messages=[{
                         "role": "user",
-                        "content": f"Give a one-line suggestion for managing {predicted_label} skin disease.",
+                        "content": f"Give a one-line suggestion under 150 characters for managing {predicted_label} skin disease.",
                     }],
                     model="llama3-8b-8192",
                     stream=False,
