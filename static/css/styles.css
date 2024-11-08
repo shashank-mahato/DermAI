@@ -1,0 +1,249 @@
+/* static/css/styles.css */
+body {
+    background-color: #f4f6f9; /* Light background for a clean look */
+    text-align: center;
+    color: #333; /* Dark text for readability */
+    font-family: 'Arial', sans-serif;
+    overflow: hidden; /* Prevent scrolling due to animated background */
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.9); /* White background for container */
+    margin: auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 60%;
+    margin-top: 100px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s;
+    position: relative; /* Ensure position relative for z-index */
+    z-index: 1; /* Make sure it appears above the animated background */
+}
+
+.container:hover {
+    transform: scale(1.01);
+}
+
+h1, h2 {
+    font-family: 'Verdana', sans-serif;
+    color: #2C3E50; /* Dark blue for headings */
+}
+
+p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #34495E; /* Grayish blue for paragraph text */
+}
+
+.form-group {
+    display: flex; /* Enable flexbox */
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center items horizontally */
+    margin-bottom: 20px;
+}
+
+input[type="file"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #BDC3C7; /* Light border for input field */
+    width: 80%; /* Adjust width to suit your layout */
+    margin-bottom: 15px; /* Space below input field */
+}
+
+button {
+    background-color: #3498DB; /* Blue button */
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+button:hover {
+    background-color: #2980B9; /* Darker blue on hover */
+    transform: scale(1.05);
+}
+
+.result-section {
+    margin-top: 30px;
+    border-top: 2px solid #BDC3C7; /* Top border for separation */
+    padding-top: 20px;
+}
+
+.uploaded-image {
+    max-width: 300px;
+    max-height: 300px;
+    border: 2px solid #3498DB; /* Blue border for uploaded image */
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.prediction {
+    font-weight: bold;
+    font-size: 18px;
+    color: #E74C3C; /* Red for prediction text */
+}
+
+/* Animated Background */
+.animated-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('../images/hospital_background.jpg') center center / cover no-repeat;
+    z-index: 0;
+    pointer-events: none; /* Prevent interaction */
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.animated-background::after {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 100px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 4s ease-in-out infinite;
+}
+
+.animated-background::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    right: 20%;
+    width: 150px;
+    height: 150px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Chatbot Styles */
+.chatbot-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #3498DB;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    font-size: 24px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s, transform 0.3s;
+    z-index: 2;
+}
+
+.chatbot-button:hover {
+    background-color: #2980B9;
+    transform: scale(1.1);
+}
+
+.chatbot-popup {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 350px;
+    max-height: 450px; /* Increased max height to allow more space for the chat */
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
+    overflow: hidden;
+}
+
+.chatbot-popup.open {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.chatbot-header {
+    background-color: #3498DB;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    text-align: center;
+}
+
+.chatbot-messages {
+    padding: 15px;
+    flex-grow: 1;
+    background-color: #f9f9f9;
+    overflow-y: auto; /* Ensures scrolling of messages */
+    max-height: 85%; /* Ensures the chat messages section takes most of the space and is scrollable */
+    word-wrap: break-word; /* Wraps text within the container */
+}
+
+.chatbot-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background-color: #fff;
+}
+
+.chatbot-input input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.chatbot-input button {
+    background-color: #3498DB;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.chatbot-input button:hover {
+    background-color: #2980B9;
+}
+
+.chatbot-message {
+    margin: 10px 0;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.chatbot-message.user {
+    text-align: right;
+    color: #3498DB;
+}
+
+.chatbot-message.ai {
+    text-align: left;
+    color: #34495E;
+    background-color: #f1f1f1;
+}

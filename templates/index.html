@@ -1,0 +1,33 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DermAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1> Get the skin answers you need—instantly!</h1>
+        <p>Please upload an image of the affected area.</p>
+        <form method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Upload an Image:</label>
+                <input type="file" name="file" id="file" accept="image/*" required>
+            </div>
+            <button type="submit">Predict</button>
+        </form>
+        {% if uploaded_image %}
+            <div class="result-section">
+                <h2>Uploaded Image:</h2>
+                <img src="{{ url_for('static', filename='uploads/' + uploaded_image.split('/')[-1]) }}" alt="Uploaded Image" class="uploaded-image">
+                <h2>Prediction Result:</h2>
+                <p class="prediction">{{ prediction }}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="animated-background"></div>
+</body>
+</html>

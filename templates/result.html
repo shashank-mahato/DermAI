@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Prediction Result</h1>
+        <img src="{{ uploaded_image }}" alt="Uploaded Image" class="uploaded-image">
+        <h2>Predicted Label: <span class="prediction">{{ prediction }}</span></h2>
+        <a href="{{ url_for('index') }}" class="button">Upload Another Image</a>
+    </div>
+
+    <div class="animated-background"></div>
+
+    <!-- Chatbot button -->
+    <button class="chatbot-button" onclick="toggleChatbot()">💬</button>
+
+    <!-- Chatbot popup -->
+    <div class="chatbot-popup" id="chatbotPopup">
+        <div class="chatbot-header">
+            Healix - AI Health Assistant
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages" style="overflow-y: auto; max-height: 300px;">
+            <!-- Display AI's initial message -->
+            <div class="chatbot-message ai">{{ initial_message }}</div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatbotInput" placeholder="Type your question...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Toggle the chatbot popup visibility
+        function toggleChatbot() {
+            const popup = document.getElementById("chatbotPopup");
+            popup.classList.toggle("open");
+        }
+
+        // Handle sending a message
+        async function sendMessage() {
+            const input = document.getElementById("chatbotInput");
+            const messages = document.getElementById("chatbotMessages");
+            const userMessage = input.value.trim();
+
+            if (userMessage === "") return; // Skip if empty message
+
+            // Display user message
+            const userMsgDiv = document.createElement("div");
+            userMsgDiv.classList.add("chatbot-message", "user");
+            userMsgDiv.innerText = userMessage;
+            messages.appendChild(userMsgDiv);
+
+            // Clear input field
+            input.value = "";
+
+            // Scroll to the latest message
+            messages.scrollTop = messages.scrollHeight;
+
+            // Call backend API for AI response
+            try {
+                const response = await fetch("/chatbot", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ question: userMessage, prediction: "{{ prediction }}" })
+                });
+
+                const data = await response.json();
+                const aiMessage = data.response;
+
+                // Display AI response
+                const aiMsgDiv = document.createElement("div");
+                aiMsgDiv.classList.add("chatbot-message", "ai");
+                aiMsgDiv.innerText = aiMessage;
+                messages.appendChild(aiMsgDiv);
+
+                // Scroll to the latest message
+                messages.scrollTop = messages.scrollHeight;
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+    </script>
+</body>
+</html>
