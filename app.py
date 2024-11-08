@@ -2,22 +2,24 @@ import os
 import sys
 import io
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from keras.models import load_model
 from werkzeug.utils import secure_filename
 from PIL import Image
 import numpy as np
 from groq import Groq
+import tensorflow as tf  # Import TensorFlow for TFLite
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 app = Flask(__name__)
 
-try:
-    model = load_model('model/AppDermAIModel.keras')
-except Exception as e:
-    print(f"Error loading model: {e}")
-    model = None 
+# Load the TFLite model
+interpreter = tf.lite.Interpreter(model_path='model/AppDermAIModel_quantized.tflite')
+interpreter.allocate_tensors()
+
+# Obtain input and output details for the TFLite model
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
 UPLOAD_FOLDER = 'static/uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -31,8 +33,7 @@ def allowed_file(filename):
 def preprocess_image(image_path):
     image = Image.open(image_path)
     image = image.resize((224, 224))
-    image = np.array(image)
-    image = image / 255.0
+    image = np.array(image, dtype=np.float32) / 255.0
     image = np.expand_dims(image, axis=0)
     return image
 
@@ -53,12 +54,17 @@ def index():
             file.save(file_path)
 
             try:
-                if model is None:
-                    raise ValueError("Model failed to load on startup.")
-
                 preprocessed_image = preprocess_image(file_path)
-                prediction = model.predict(preprocessed_image)
-                predicted_index = np.argmax(prediction, axis=1)[0]
+
+                # Set the input tensor with the preprocessed image
+                interpreter.set_tensor(input_details[0]['index'], preprocessed_image)
+                
+                # Run inference
+                interpreter.invoke()
+
+                # Get the output tensor and process prediction
+                output_data = interpreter.get_tensor(output_details[0]['index'])
+                predicted_index = np.argmax(output_data[0])
                 predicted_label = labels[predicted_index]
 
                 client = Groq(api_key="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")
@@ -110,7 +116,6 @@ def chatbot():
         )
 
         ai_message = chat_completion.choices[0].message.content
-
         return jsonify({'response': ai_message})
 
     except Exception as e:
@@ -120,4 +125,4 @@ if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
 
-    app.run(debug=False, host="0.0.0.0", port=10000)
+    app.run(debug=True)
