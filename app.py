@@ -13,7 +13,11 @@ sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 app = Flask(__name__)
 
-model = load_model('model/AppDermAIModel.keras')
+try:
+    model = load_model('model/AppDermAIModel.keras')
+except Exception as e:
+    print(f"Error loading model: {e}")
+    model = None 
 
 UPLOAD_FOLDER = 'static/uploads/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -49,6 +53,9 @@ def index():
             file.save(file_path)
 
             try:
+                if model is None:
+                    raise ValueError("Model failed to load on startup.")
+
                 preprocessed_image = preprocess_image(file_path)
                 prediction = model.predict(preprocessed_image)
                 predicted_index = np.argmax(prediction, axis=1)[0]
@@ -65,7 +72,6 @@ def index():
                 )
 
                 suggestions = chat_completion.choices[0].message.content[:150]
-
                 initial_message = f"{suggestions}"
 
                 return redirect(url_for('result', uploaded_image=filename, prediction=predicted_label, initial_message=initial_message))
